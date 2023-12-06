@@ -1,40 +1,33 @@
- import React, {Component}from 'react';
+ import React, {Component, useState, useEffect} from 'react';
 import CardList from './CardList';
 import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll';
 import '../styles/App.css'
 import ErrorBoundary from '../components/ErrorBoundary'
 
-class App extends Component {
-  constructor() {
-    super();
-    // console.log('constructor')
-    this.state = {
-        robots: [],
-        searchfield: ''
-    }
-  }
+function App() {
+  const [robots,setRobots] = useState([])
+  const [searchfield,setSearchfield] = useState('')
 
-  componentDidMount() {
+  useEffect(() =>  {
     fetch('https://jsonplaceholder.typicode.com/users')
     .then(response => response.json())
-    .then(users => this.setState({robots: users}));
+    .then(users => setRobots(users) );
     
     // console.log('componentDidMount');
-  }
+  },[]);
 
-  onSearchChange = (event) => {
-    this.setState({searchfield: event.target.value})
-    
-  }
+  const onSearchChange = (event) => {
+    setSearchfield( event.target.value)
+     }
 
-  render() {
-    const filteredRobots = this.state.robots.filter(robots => {
-      return robots.name.toLowerCase().includes(this.state.searchfield.toLowerCase());
+ 
+    const filteredRobots = robots.filter(robots => {
+      return robots.name.toLowerCase().includes(searchfield.toLowerCase());
 
     })
     // console.log('render')
-    if (this.state.robots.length === 0) {
+    if (robots.length === 0) {
       // console.log('length is 0')
       return <h1> Loading.... </h1>
       } else {
@@ -42,7 +35,7 @@ class App extends Component {
         return (
           <div className= 'tc pa2'>
             <h1 className= 'f1'>Robo Friends</h1>
-            <SearchBox searchChange = {this.onSearchChange}/>
+            <SearchBox searchChange = {onSearchChange}/>
             <Scroll>
             <ErrorBoundary> 
             <CardList robots= {filteredRobots}/>
@@ -53,7 +46,5 @@ class App extends Component {
     }
   
   }
-  
-}
 
 export default App;
